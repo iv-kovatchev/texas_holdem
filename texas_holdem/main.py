@@ -14,6 +14,8 @@ def main():
 
     poker_game.show_player_hands()
 
+    poker_game.deal_community_cards()
+
     running = True
     while running:
         screen.fill((0, 100, 0)) # Fill the screen with green (poker table color)
