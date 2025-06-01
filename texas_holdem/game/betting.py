@@ -15,20 +15,31 @@ class Betting:
             return True
         
     def call(self, player):
+        player.is_called = True
         return self.bet(player, self.current_bet)
     
-    def raise_bet(self, player, amount):
+    def raise_bet(self, current_player, amount, players):
         if amount <= self.current_bet:
-            print(f"{player.name} needs to raise more than the current bet.")
+            print(f"{current_player.name} needs to raise more than the current bet.")
             return False
         else:
             self.pot += amount - self.current_bet
             self.current_bet = amount
-            player.chips -= amount
-            print(f"{player.name} raises the bet to {amount} chips.")
+            current_player.chips -= amount
+            print(f"{current_player.name} raises the bet to {amount} chips.")
+            
+            # Reset all players' is_called to False except the one who raised
+            for p in players:
+                if p != current_player:
+                    p.is_called = False
+            
             return True
         
+    def check(self):
+        return True
+        
     def fold(self, player):
+        player.has_folded = True
         print(f"{player.name} folds.")
         return True
     

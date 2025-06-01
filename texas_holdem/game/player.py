@@ -4,6 +4,9 @@ class Player:
         self.chips = chips
         self.hand = []
         self.is_ai = is_ai
+        self.has_folded = False
+        self.bet_this_round = 0
+        self.is_called = False
 
     def receive_cards(self, cards):
         self.hand = cards
