@@ -46,8 +46,8 @@ class MenuUI:
             self.draw_text(f"{player['name']} ({player['chips']} chips)", 60, y, color)
 
         # Buttons
-        self.draw_text("[Enter] Start Game", 50, 500)
-        self.draw_text("[Esc] Quit", 800, 500)
+        self.draw_text("[Enter] Start Game", 50, SCREEN_HEIGHT - 80)
+        self.draw_text("[Esc] Quit", 1040, SCREEN_HEIGHT - 80)
 
     def handle_events(self):
         for event in pygame.event.get():

@@ -42,18 +42,3 @@ class Betting:
         player.has_folded = True
         print(f"{player.name} folds.")
         return True
-    
-    def human_input(self, player):
-        print(f"\n{player.name}, it's your turn!")
-        action = input(f"Choose action: (C)all, (R)aise, (F)old: ").lower()
-        
-        if action == 'c':
-            return self.call(player)
-        elif action == 'r':
-            raise_amount = int(input(f"Enter raise amount (current bet is {self.current_bet}): "))
-            return self.raise_bet(player, raise_amount)
-        elif action == 'f':
-            return self.fold(player)
-        else:
-            print("Invalid input, please try again.")
-            return self.human_input(player)

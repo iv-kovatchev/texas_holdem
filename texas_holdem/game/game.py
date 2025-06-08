@@ -40,6 +40,7 @@ class PokerGame:
 
     def setup_new_round(self, table):
         print("\n=== New Round Starting ===")
+        table.add_log("=== New Round Starting ===")
 
         # Reset everything
         self.deck = Deck()
@@ -104,7 +105,10 @@ class PokerGame:
                 if player.is_ai:
                     # AI acts immediately
                     action = decide_action(player, self)
+
+                    table.add_log(f"{player.name} chooses to {action}")
                     print(f"{player.name} chooses to {action}")
+
                     self.current_betting_player += 1
                     
                     # Check if only one player remains
@@ -115,6 +119,8 @@ class PokerGame:
                     # Human player - pause and wait
                     self.waiting_for_human = True
                     table.waiting_for_human_action = True
+
+                    table.add_log(f"{player.name}'s turn - waiting for input...")
                     print(f"{player.name}'s turn - waiting for input...")
                     return
             else:
@@ -187,7 +193,7 @@ class PokerGame:
             self.game_phase = "river"
             self.start_betting_round()
         elif self.game_phase == "river":
-            self.evaluate_winner()
+            self.evaluate_winner(table)
             self.game_phase = "waiting"  # Round complete
 
     def deal_cards(self, table):
@@ -198,18 +204,21 @@ class PokerGame:
     def deal_flop(self, table):
         self.deck.deal(1)  # Burn card
         self.community_cards.extend(self.deck.deal(3))
+        table.add_log(f"Flop: {self.community_cards[:3]}")
         print(f"Flop: {self.community_cards[:3]}")
         table.draw_community_cards()
 
     def deal_turn(self, table):
         self.deck.deal(1)  # Burn card
         self.community_cards.extend(self.deck.deal(1))
+        table.add_log(f"Turn: {self.community_cards[3]}")
         print(f"Turn: {self.community_cards[3]}")
         table.draw_community_cards()
 
     def deal_river(self, table):
         self.deck.deal(1)  # Burn card
         self.community_cards.extend(self.deck.deal(1))
+        table.add_log(f"River: {self.community_cards[4]}")
         print(f"River: {self.community_cards[4]}")
         table.draw_community_cards()
 
@@ -233,6 +242,9 @@ class PokerGame:
         print(f"{small_blind_player.name} posts small blind: {sb_amount}")
         print(f"{big_blind_player.name} posts big blind: {bb_amount}")
 
+        table.add_log(f"{small_blind_player.name} posts small blind: {sb_amount}")
+        table.add_log(f"{big_blind_player.name} posts big blind: {bb_amount}")
+
         # Update display
         for i in [sb_index, bb_index]:
             x, y = player_positions[i]
@@ -240,7 +252,7 @@ class PokerGame:
             pygame.draw.rect(table.screen, TABLE_COLOR, name_bg)
             table.draw_player(self.players[i], x, y)
 
-    def evaluate_winner(self):
+    def evaluate_winner(self, table):
         active_players = [p for p in self.players if not p.has_folded]
 
         if len(active_players) == 1:
@@ -255,6 +267,9 @@ class PokerGame:
 
         # Flag to show all cards
         self.showdown_active = True
+
+        table.add_log(f"Winner: {winner.name} with {winner.hand}")
+        table.add_log(f"Pot of {self.betting.pot} chips goes to {winner.name}")
         
         print(f"\n🏆 Winner: {winner.name} with {winner.hand}")
         print(f"Pot of {self.betting.pot} chips goes to {winner.name}")
@@ -276,7 +291,3 @@ class PokerGame:
         if self.betting_phase == "active" and self.current_betting_player < len(self.players):
             return self.players[self.current_betting_player]
         return None
-
-    def show_player_hands(self):
-        for player in self.players:
-            print(player)

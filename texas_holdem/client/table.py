@@ -1,6 +1,7 @@
 import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, player_positions, TABLE_COLOR
 from client.button import Button
+from datetime import datetime
 
 CARD_WIDTH, CARD_HEIGHT = 80, 111
 WHITE = (255, 255, 255)
@@ -13,6 +14,8 @@ class Table:
         self.game = game
         self.font = pygame.font.SysFont(None, 24)
         self.big_font = pygame.font.SysFont(None, 32)
+        
+        self.log_messages = []
 
         # Create action buttons for human player
         button_y = SCREEN_HEIGHT - 80
@@ -26,7 +29,7 @@ class Table:
         self.human_action_result = None
 
         try:
-            self.card_back = pygame.image.load("assets/card_back.jpg")
+            self.card_back = pygame.image.load("client/assets/card_back.jpg")
             self.card_back = pygame.transform.scale(self.card_back, (CARD_WIDTH, CARD_HEIGHT))
         except:
             self.card_back = None
@@ -36,7 +39,7 @@ class Table:
         
         if face_up:
             try:
-                card_image = pygame.image.load(f"assets/cards/{text}.jpg")
+                card_image = pygame.image.load(f"client/assets/cards/{text}.jpg")
                 card_image = pygame.transform.scale(card_image, (CARD_WIDTH, CARD_HEIGHT))
                 self.screen.blit(card_image, (x, y))
             except:
@@ -182,11 +185,6 @@ class Table:
             self.call_button.text = f"Call {call_amount}" if not player.is_called else "Check"
             self.call_button.draw(self.screen)
             self.raise_button.draw(self.screen)
-            
-            # Draw instruction text
-            instruction = "Your turn - choose an action:"
-            inst_label = self.font.render(instruction, True, WHITE)
-            self.screen.blit(inst_label, (50, SCREEN_HEIGHT - 120))
 
     def handle_human_action(self, event, player):
         """Handle human player button clicks"""
@@ -218,10 +216,19 @@ class Table:
             
         return None
 
-    def wait_for_human_action(self):
-        """Set the table to wait for human player input"""
-        self.waiting_for_human_action = True
-        self.human_action_result = None
+    def add_log(self, message):
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        full_message = f"[{timestamp}]: {message}"
+        self.log_messages.append(full_message)
+
+        if len(self.log_messages) > 8:
+            self.log_messages.pop(0)
+
+    def draw_log(self):
+        x, y = 20, SCREEN_HEIGHT - 300
+        for i, msg in enumerate(self.log_messages):
+            text = self.font.render(msg, True, (255, 255, 255))
+            self.screen.blit(text, (x, y + i * 22))
 
     def draw(self):
         """Draw the entire table"""
@@ -238,5 +245,7 @@ class Table:
 
         if(self.game.game_phase != "waiting"):    
             self.draw_pot_info()
+
+        self.draw_log()
         
         self.draw_action_buttons()

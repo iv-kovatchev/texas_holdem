@@ -15,8 +15,7 @@ HAND_RANKS = {
     "Flush": 5,
     "Full House": 6,
     "Four of a Kind": 7,
-    "Straight Flush": 8,
-    # We'll expand this in future steps
+    "Straight Flush": 8
 }
 
 def is_straight(ranks):
